@@ -39,7 +39,7 @@ class LUFactorization:
             for j in range(i + 1, self.__rows):
                 mul = self.__Ap[j, i] / self.__Ap[i, i]
                 mul = -mul
-                self.row_induction(i, j, mul)
+                self.__row_induction(i, j, mul)
                 self.__Ap[j, i] = (-mul)
 
                 # print("AP : ")
@@ -86,7 +86,7 @@ class LUFactorization:
     rows induction, row2=row2-mul*row1
     '''
 
-    def row_induction(self, row1, row2, mul):
+    def __row_induction(self, row1, row2, mul):
         for i in range(row1, self.__cols):
             self.__Ap[row2, i] += self.__Ap[row1, i] * mul
 
