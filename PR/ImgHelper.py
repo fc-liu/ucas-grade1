@@ -22,8 +22,8 @@ class Img:
         self.current_img = 0
 
     def next_img(self):
-        print("current_img")
-        print(self.current_img)
+        # print("current_img")
+        # print(self.current_img)
         if self.current_img < self.amount:
             img_offset = 16 + self.current_img * self.rows * self.cols
             label_offset = 8 + self.current_img
@@ -37,7 +37,7 @@ class Img:
                     pixel = struct.unpack('>B', bytes(chunk))[0]
                     img[i] = pixel
             label = self.__label_file.read(1)
-            print(label)
+            # print(label)
             if label:
                 label = struct.unpack('>B', bytes(label))[0]
             self.current_img += 1
