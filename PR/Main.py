@@ -1,4 +1,5 @@
 import numpy
+import math
 from ImgHelper import Img
 
 
@@ -9,14 +10,22 @@ class pattern:
         self.imgs = []
         self.__sum = 0
         self.amount = 0
+        self.ldf_wi = 0
+        self.ldf_wi0 = 0
+        self.p = 0
 
-    def finish_append(self):
+    def finish_append(self, total):
         self.sigma = numpy.cov(numpy.transpose(self.imgs))
         self.mu = numpy.mean(self.imgs, 0)
+        self.amount = self.imgs.__len__()
+        self.p = self.amount / total
+        self.ldf_wi=self.mu/self.sigma
         print("sigma : ")
         print(numpy.size(self.sigma))
         print("mu : ")
         print(numpy.size(self.mu))
+
+    def ldf(self, img):
 
 
 class Main:
@@ -41,12 +50,21 @@ class Main:
     def start(self):
         img = Img(self.train_img, self.train_label)
         img_item = img.next_img()
+        total = img.amount
         while img_item:
             if img_item[1] < 10 and img_item[1] >= 0:
                 self.patterns[img_item[1]].imgs.append(img_item[0])
             img_item = img.next_img()
         for p in self.patterns:
             p.finish_append()
+
+        test_img = Img(self.test_img, self.test_label)
+        test = test_img.next_img()
+        c = self.LDF(test[0])
+        print("predict : ")
+        print(c)
+        print("true : ")
+        print(test[1])
 
 
 if __name__ == '__main__':
