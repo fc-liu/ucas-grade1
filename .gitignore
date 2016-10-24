@@ -1,6 +1,6 @@
 PR/__pycache__
-PR/t10k-images.idx3-ubyte
-PR/t10k-labels.idx1-ubyte
-PR/train-images.idx3-ubyte
-PR/train-labels.idx1-ubyte
+PR/ex1/t10k-images.idx3-ubyte
+PR/ex1/t10k-labels.idx1-ubyte
+PR/ex1/train-images.idx3-ubyte
+PR/ex1/train-labels.idx1-ubyte
 
