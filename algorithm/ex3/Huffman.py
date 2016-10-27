@@ -1,5 +1,9 @@
 import struct
 
+"""
+present struct for tree node
+"""
+
 
 class Node:
     val = 0
@@ -11,6 +15,11 @@ class Node:
         self.char = char
 
 
+"""
+class implement Huffman encode
+"""
+
+
 class Huffman_encode:
     def __init__(self):
         self.__freq_word = []
@@ -18,6 +27,10 @@ class Huffman_encode:
         self.encode_dic = {}
         self.append_key = "appends"
         self.end_flag = "end\n"
+
+    """
+    method to encode the input_file and write to output_file
+    """
 
     def encode(self, input_file, output_file_path):
         self.__freq_word = self.char_freq(input_file)
@@ -28,6 +41,7 @@ class Huffman_encode:
         print(self.encode_dic)
         total_len_bin = 0
 
+        #
         for c in self.encode_dic:
             total_len_bin += self.__freq_word[c] * len(self.encode_dic[c])
 
@@ -95,12 +109,21 @@ class Huffman_encode:
         return self.encode_dic
 
 
+"""
+class implement Huffman tree
+"""
+
+
 class Huffman_tree:
     nodes = []
 
     def __init__(self):
         self.root = None
         self.nodes = None
+
+    """
+    build a huffman tree from char frequency
+    """
 
     def build_tree_from_freq(self, char_freq):
         node_list = []
@@ -120,6 +143,11 @@ class Huffman_tree:
             self.nodes.append(temp)
         return self.nodes[0]
 
+    """
+    build a huffman tree from Huffman code
+
+    """
+
     def build_tree_from_code(self, code_dic):
         root = Node(None, 0)
         for code_key in code_dic:
@@ -137,6 +165,10 @@ class Huffman_tree:
             temp.char = code_key
         print("build tree from code finish!!!!!")
         return root
+
+    """
+    get Huffman code from Huffman tree
+    """
 
     def code_from_tree(self, root):
         dic = {}
@@ -157,12 +189,21 @@ class Huffman_tree:
         return sorted(self.nodes, key=lambda Node: Node.val)
 
 
+"""
+class implement Huffman decode
+"""
+
+
 class Huffman_decode:
     def __init__(self):
         self.dic = {}
         self.append_key = "appends"
         self.end_flag = "end"
         self.root = None
+
+    """
+    chief method to decode a compressed file
+    """
 
     def decode(self, input_file_path, output_file_path):
         print("start decode!!!!!")
@@ -176,15 +217,20 @@ class Huffman_decode:
         self.root = hfm_tree.build_tree_from_code(self.dic)
         chunk = encode_file.read(1)
         temp_node = self.root
+
+        # scan the compressed part file
         while chunk:
             integer = struct.unpack('B', bytes(chunk))[0]
             bin_str = self.__int2binStr(integer)
             chunk = encode_file.read(1)
+
+            # meet the last byte of the compressed file, should omit the added bits
             if chunk is None:
                 bin_str = bin_str[:8 - appends_count]
 
             c = ''
 
+            # get the real char through searching the Huffman tree
             for sc in bin_str:
                 if temp_node.char:
                     c = temp_node.char
@@ -199,6 +245,10 @@ class Huffman_decode:
         decode_file = open(output_file_path, 'w')
         decode_file.write(ori_text)
 
+    """
+    get Huffman code from compressed file head
+    """
+
     def get_encode_dic(self, file):
         encode_dic = {}
         str_line = file.readline()
@@ -206,9 +256,13 @@ class Huffman_decode:
         while str_line != self.end_flag:
             # print(str_line)
             par = str_line.split(':')
+
+            # special case for character : ":"
             if len(par) == 3:
                 par[0] = ':'
                 par[1] = par[2]
+
+            # special case for character : "\n"
             if len(par) < 2:
                 str_line = file.readline().decode('ascii')[:-1]
                 par = str_line.split(":")
@@ -220,12 +274,19 @@ class Huffman_decode:
         print("finish get encode dic!!!")
         return encode_dic
 
+    """
+    tramsform an integer to the responsding binary string
+    """
+
     def __int2binStr(self, number):
         s = bin(number).replace('0b', '')
         s = "0" * (8 - len(s)) + s
         return s
 
 
+"""
+main method
+"""
 if __name__ == '__main__':
     input_1_file = "Aesop_Fables.txt"
     encode_1_file = "encode_Ae.txt"
@@ -243,26 +304,3 @@ if __name__ == '__main__':
     hfm_decode = Huffman_decode()
     hfm_encode.encode(input_2_file, encode_2_file)
     hfm_decode.decode(encode_2_file, decode_2_file)
-
-
-    # file_path = "test.txt"
-    # file_write = open("out.txt", "wb")
-    # s = "few\n"
-    # s = s.encode('ascii')
-    # print(s)
-    # file_write.write(s)
-    # s = "cdsav"
-    # s = s.encode('ascii')
-    # file_write.write(s)
-    # file = open(file_path, "rb")
-    # line = file.readline()
-    # while line:
-    #     print(line)
-    #     s = line.decode('ascii')
-    #     # print(s)
-    #     # print(type(s))
-    #     # print(a)
-    #     print(str(s))
-    #     print((s).__len__())
-    #     file_write.write(line)
-    #     line = file.readline()
