@@ -24,6 +24,7 @@ class Main:
     """
     through KNN to judge the class
     """
+
     def get_class(self, knn):
         pattern_dic = {}
         for nn in knn:
@@ -33,7 +34,7 @@ class Main:
                 pattern_dic[nn[1]] = 1
         c = None
         freq = 0
-        for (k, v) in pattern_dic:
+        for (k, v) in pattern_dic.items():
             if c is None:
                 c = k
                 freq = v
@@ -47,22 +48,24 @@ class Main:
     """
     find K nearest neighbors of point and return
     """
+
     def find_KNN(self, point):
-        k=self.K
+        k = self.K
         temp_img = []
         ##initial k to temp_img
         for i in range(k):
             temp = self.train_img[i]
             d = self.distance(point, temp)
-            temp[2]=d
+            temp[2] = d
             temp_img.append(temp)
         temp_img.sort(key=lambda x: x[2])
-        #find K NN
+        # find K NN
         for i in range(k):
             for img in self.train_img:
                 d = self.distance(img, point)
                 if d < temp_img[k - 1][2]:
-                    temp_img[k - 1] = img.append(d)
+                    img[2] = d
+                    temp_img[k - 1] = img
                     temp_img.sort(key=lambda x: x[2])
 
         return temp_img
@@ -70,16 +73,18 @@ class Main:
     """
     calculate distance between point x1 and x2
     """
+
     def distance(self, x1, x2):
         d = 0
-        dim = len(x1)
-        for i in range(dim):
-            d = d + (x2[i] - x1[i]) ** 2
+        dim = len(x1[0])
+        diff_vec = x2[0] - x1[0]
+        d = diff_vec.dot(diff_vec)
         return d
 
     """
     test the test set and return correction
     """
+
     def test(self):
         correct = 0
         error = 0
