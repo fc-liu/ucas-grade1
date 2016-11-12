@@ -53,18 +53,22 @@ class Main:
         k = self.K
         temp_img = []
         ##initial k to temp_img
-        for i in range(k):
-            temp = self.train_img[i]
-            d = self.distance(point, temp)
-            temp[2] = d
-            temp_img.append(temp)
-        temp_img.sort(key=lambda x: x[2])
+        # for i in range(k):
+        #     temp = self.train_img[i]
+        #     d = self.distance(point, temp)
+        #     temp[2] = d
+        #     temp_img.append(temp)
+        # temp_img.sort(key=lambda x: x[2])
         # find K NN
         for i in range(k):
             for img in self.train_img:
                 d = self.distance(img, point)
+                img[2] = d
+                if temp_img.__len__()<k:
+                    temp_img.append(img)
+                    temp_img.sort(key=lambda x: x[2])
+                    continue
                 if d < temp_img[k - 1][2]:
-                    img[2] = d
                     temp_img[k - 1] = img
                     temp_img.sort(key=lambda x: x[2])
 
@@ -111,8 +115,8 @@ class Main:
 
 
 if __name__ == '__main__':
-    m = Main(1, "../train-images.idx3-ubyte", "../train-labels.idx1-ubyte",
+    m = Main(3, "../train-images.idx3-ubyte", "../train-labels.idx1-ubyte",
              "../t10k-images.idx3-ubyte", "../t10k-labels.idx1-ubyte")
     correct = m.test()
-    print("ldf correct : ")
+    print("knn correct : ")
     print(correct)
