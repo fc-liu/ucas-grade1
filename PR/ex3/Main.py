@@ -247,9 +247,7 @@ this function is used to plot the train data and the trained linear function
 def plot_figure(data, a):
     plt.figure(figsize=(8, 5), dpi=80)
     axes = plt.subplot(111)
-    # 将三类数据分别取出来
-    # x轴代表飞行的里程数
-    # y轴代表玩视频游戏的百分比
+
     type1_x = []
     type1_y = []
     type2_x = []

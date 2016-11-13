@@ -2,6 +2,8 @@ import csv
 from sklearn import linear_model
 import time
 from datetime import datetime
+from matplotlib import pyplot as plt
+import numpy
 
 
 def csvread(file):
@@ -107,6 +109,8 @@ def train(train_file, predic_file, res_file):
             # print("x : " + str(x))
             # print("y : " + str(y))
             regr = get_linear_regr(x, y)
+            par = regr.get_params()
+            print(par)
             if prov in lin_regr_dic:
                 lin_regr_dic[prov][type_dic] = regr
 
@@ -121,7 +125,9 @@ def train(train_file, predic_file, res_file):
         t_dif = day_diff(t, very_begin)
         # print(write_row)
         regr = lin_regr_dic[prov][type]
-        predict_price = regr.predict(t_dif)[0]
+        predict_price = round(regr.predict(t_dif)[0], 3)
+        if predict_price < 0:
+            predict_price = abs(predict_price)
         print(predict_price)
         write_row = [item[1], item[3], item[9], predict_price]
         res_writer.writerow(write_row)
@@ -137,11 +143,31 @@ def day_diff(day1, day2):
     return (day1 - day2).days
 
 
+def plot_figure(x_list, y_list, a):
+    plt.figure(figsize=(8, 5), dpi=80)
+    axes = plt.subplot(111)
+    type1_x = []
+    type1_y = []
+
+    x = numpy.linspace(-10.0, 10.0)
+    y = -(a[2] + x * a[0]) / a[1]
+    plt.plot(x, y, 'r.-')
+
+    for i in x_list:
+        i = i[0]
+
+    type1 = axes.scatter(x_list, y_list, s=20, c='red')
+    plt.xlabel('x1')
+    plt.ylabel('x2')
+    axes.legend((type1, type2, type3, type4), ("w1", "w2", "w3", "w4"), loc=2)
+
+    plt.show()
+
+
 if __name__ == '__main__':
     file_dir = "/home/lfc/Desktop/"
     farm = file_dir + "farming.csv"
     prod = file_dir + "product_market.csv"
-    out = file_dir + "test.csv"
     keys = file_dir + "key.csv"
     extract_file = file_dir + "extract.csv"
     predict_file = file_dir + "predict.csv"
