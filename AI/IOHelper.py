@@ -84,7 +84,7 @@ def train(train_file, predic_file, res_file):
         t_str = item[12]
         t = str2datetime(t_str)
         t_dif = day_diff(t, very_begin)
-        price = item[9]
+        price = float(item[9])
         if prov in train_data_dic:
             type_dic = train_data_dic[prov]
             if type in type_dic:
@@ -99,27 +99,31 @@ def train(train_file, predic_file, res_file):
     # get linear regression
     for prov in train_data_dic:
         for type_dic in train_data_dic[prov]:
-            for type in type_dic:
-                tp_dic = type_dic[type]
-                x = list(tp_dic.keys())
-                y = list(tp_dic.values())
-                regr = get_linear_regr(x, y)
-                if prov in lin_regr_dic:
-                    lin_regr_dic[prov][type] = regr
+            x_list = list(train_data_dic[prov][type_dic].keys())
+            x = []
+            for i in x_list:
+                x.append([i])
+            y = list(train_data_dic[prov][type_dic].values())
+            # print("x : " + str(x))
+            # print("y : " + str(y))
+            regr = get_linear_regr(x, y)
+            if prov in lin_regr_dic:
+                lin_regr_dic[prov][type_dic] = regr
 
-                else:
-                    lin_regr_dic[prov] = {type: regr}
+            else:
+                lin_regr_dic[prov] = {type_dic: regr}
 
     for item in predic_reader:
-        write_row = [item[1], item[3], item[9]]
         prov = item[1]
         type = item[3]
-        t_str = item[12]
+        t_str = item[9]
         t = str2datetime(t_str)
         t_dif = day_diff(t, very_begin)
+        # print(write_row)
         regr = lin_regr_dic[prov][type]
-        predict_price = regr.predict(t_dif)
-        write_row.append(predict_price)
+        predict_price = regr.predict(t_dif)[0]
+        print(predict_price)
+        write_row = [item[1], item[3], item[9], predict_price]
         res_writer.writerow(write_row)
 
 
