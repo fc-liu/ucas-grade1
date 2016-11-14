@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 from matplotlib import pyplot as plt
 import numpy
+import math
 
 
 def csvread(file):
@@ -63,7 +64,7 @@ def csv_count(file):
 
 
 def get_linear_regr(x_list, y_list):
-    regr = linear_model.LinearRegression()
+    regr = linear_model.LinearRegression(normalize=True)
     regr.fit(x_list, y_list)
 
     return regr
@@ -103,14 +104,43 @@ def train(train_file, predic_file, res_file):
         for type_dic in train_data_dic[prov]:
             x_list = list(train_data_dic[prov][type_dic].keys())
             x = []
-            for i in x_list:
-                x.append([i])
-            y = list(train_data_dic[prov][type_dic].values())
-            # print("x : " + str(x))
-            # print("y : " + str(y))
+            x_plot = []
+            y = []
+            threhold = 35
+            while x.__len__() == 0:
+                for i in x_list:
+                    if i < threhold or i == 0:
+                        continue
+                    x_plot.append([i])
+                    x.append([1 / i, math.cos(i)])
+                    y.append(train_data_dic[prov][type_dic][i])
+                threhold -= 5
+            y_full = list(train_data_dic[prov][type_dic].values())
+
+            print("x : " + str(x))
+            print("y : " + str(y))
             regr = get_linear_regr(x, y)
-            par = regr.get_params()
-            print(par)
+
+            # y_lin = []
+            #
+            # x_lin = x.copy()
+            # x_list_lin = x_plot.copy()
+            #
+            # for i in range(x_list_lin.__len__()):
+            #     x_list_lin[i] = x_list_lin[i][0]
+            #     # x_extend = numpy.linspace(90, 120)
+            #     # x_list_lin.extend(x_extend)
+            #     # print("x_list_lin  : ")
+            #     # print(x_list_lin)
+            #
+            #     # for i in x_extend:
+            #     #     x_lin.append([i])
+            # for i in x_lin:
+            #     y_lin.append(regr.predict(i))
+            # print("y_lin : ")
+            # print(y_lin)
+            # plot_figure(x_list, y_full, x_list_lin, y_lin)
+
             if prov in lin_regr_dic:
                 lin_regr_dic[prov][type_dic] = regr
 
@@ -125,9 +155,9 @@ def train(train_file, predic_file, res_file):
         t_dif = day_diff(t, very_begin)
         # print(write_row)
         regr = lin_regr_dic[prov][type]
-        predict_price = round(regr.predict(t_dif)[0], 3)
+        predict_price = round(regr.predict([1 / t_dif, math.cos(t_dif)])[0], 3)
         if predict_price < 0:
-            predict_price = abs(predict_price)
+            predict_price = abs(predict_price) + 1.5
         print(predict_price)
         write_row = [item[1], item[3], item[9], predict_price]
         res_writer.writerow(write_row)
@@ -143,23 +173,20 @@ def day_diff(day1, day2):
     return (day1 - day2).days
 
 
-def plot_figure(x_list, y_list, a):
+def plot_figure(x_list, y_list, x, y):
     plt.figure(figsize=(8, 5), dpi=80)
     axes = plt.subplot(111)
     type1_x = []
     type1_y = []
 
-    x = numpy.linspace(-10.0, 10.0)
-    y = -(a[2] + x * a[0]) / a[1]
-    plt.plot(x, y, 'r.-')
-
-    for i in x_list:
-        i = i[0]
+    # x = numpy.linspace(-10.0, 10.0)
+    # y = -(a[2] + x * a[0]) / a[1]
+    plt.plot(x, y, 'b.-')
 
     type1 = axes.scatter(x_list, y_list, s=20, c='red')
     plt.xlabel('x1')
     plt.ylabel('x2')
-    axes.legend((type1, type2, type3, type4), ("w1", "w2", "w3", "w4"), loc=2)
+    # axes.legend((type1, type2, type3, type4), ("w1", "w2", "w3", "w4"), loc=2)
 
     plt.show()
 
