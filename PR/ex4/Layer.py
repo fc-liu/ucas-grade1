@@ -1,7 +1,9 @@
 from Cell import Cell
 import numpy
 
-
+'''
+implement the struct for each layer
+'''
 class Layer:
     def __init__(self, active_func, cell_amount):
         self.active_func = active_func
@@ -17,6 +19,9 @@ class Layer:
             for i in range(len(val_vec)):
                 self.cells[i].net_val = val_vec[i]
 
+    '''
+    active all cells of this layer
+    '''
     def active_cells(self):
         for cell in self.cells:
             cell.active()

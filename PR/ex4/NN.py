@@ -3,8 +3,13 @@ import numpy
 from Layer import Layer
 from matplotlib import pyplot as plt
 
-
+'''
+neural network struct
+'''
 class NN:
+    '''
+    initial the hidden layer nodes and random the connection weights
+    '''
     def __init__(self):
         self.input_cells = 3
         self.hidden_cells = 7
@@ -14,6 +19,9 @@ class NN:
         # self.w_ih = numpy.ones((self.hidden_cells, self.input_cells)) * 5
         # self.w_hj = numpy.ones((self.output_cells, self.hidden_cells)) * 5
 
+    '''
+    from a sample data build a NN
+    '''
     def build_NN(self, sample):
         nn_sample = []
         ##initial the three layer network for every sample
@@ -52,16 +60,21 @@ class NN:
 
         return nn_sample
 
+    '''
+    the batch update back propagation algorithm
+    delta W_hj = eta * (1 - y^2) * (W_hj^T * delta_j) * X
+    delta W_ih = eta * Z * (1 - Z) * (T - Z) * Y
+    '''
     def BP_batch_train(self, train_data, eta, theta):
         jw_list = []
         delta_jw = 0
         while True:
-            former_jw = delta_jw
+            former_jw = delta_jw    #record the last Jw
             delta_w_ih = 0
             delta_w_hj = 0
             delta_jw = 0
             for sample in train_data:
-                nn_sample = self.build_NN(sample)
+                nn_sample = self.build_NN(sample)   #build a NN from a sample
                 Z = nn_sample[2].get_active_val_as_vec()
                 # net_j = nn_sample[2].get_net_val_as_vec()
                 T = nn_sample[3]
@@ -99,6 +112,11 @@ class NN:
                 self.w_ih += eta * delta_w_ih.transpose()
         self.plot_jw(jw_list)
 
+    '''
+        the single update back propagation algorithm
+        delta W_hj = eta * (1 - y^2) * (W_hj^T * delta_j) * X
+        delta W_ih = eta * Z * (1 - Z) * (T - Z) * Y
+    '''
     def BP_single_train(self, train_data, eta, theta):
         jw_list = []
         delta_jw = 0
@@ -150,6 +168,9 @@ class NN:
         self.plot_jw(jw_list)
         pass
 
+    '''
+    plot the figure of aim funtion and iteration times
+    '''
     def plot_jw(self, jw_list):
         plt.figure(figsize=(8, 5), dpi=80)
         # axes = plt.subplot(111)
@@ -159,6 +180,9 @@ class NN:
         plt.ylabel('aim function')
         plt.show()
 
+    '''
+    the aim function
+    '''
     def loss_func(self, base, predict):
         if len(base) != len(predict):
             raise Exception("predict dim error")
@@ -166,11 +190,16 @@ class NN:
         loss = numpy.inner(loss_vec, loss_vec)
         return loss
 
+    '''
+    once train the NN finished , we can predict new data
+    '''
     def predict(self, data_vec):
         nn = self.build_NN(data_vec)
         return nn[2].get_active_val_as_vec()
 
-
+'''
+sigmoid active function
+'''
 def sigmoid(s):
     # print("-----------------s------------------")
     # print(s)
@@ -180,7 +209,9 @@ def sigmoid(s):
 
     return frac
 
-
+'''
+tanh active function
+'''
 def tanh(s):
     # print("-----------------s------------------")
     # print(s)
