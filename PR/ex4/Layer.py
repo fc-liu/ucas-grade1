@@ -1,10 +1,14 @@
 from Cell import Cell
+import numpy
 
 
 class Layer:
     def __init__(self, active_func, cell_amount):
         self.active_func = active_func
-        self.cells = [Cell(active_func, 0)]
+        self.cells = []
+
+        for i in range(cell_amount):
+            self.cells.append(Cell(active_func, 0))
 
     def set_net_vals_from_vec(self, val_vec):
         if len(val_vec) != len(self.cells):
@@ -22,11 +26,11 @@ class Layer:
         for cell in self.cells:
             vector.append(cell.active_val)
 
-        return vector
+        return numpy.asarray(vector)
 
     def get_net_val_as_vec(self):
         vector = []
         for cell in self.cells:
             vector.append(cell.net_val)
 
-        return vector
+        return numpy.asarray(vector)
