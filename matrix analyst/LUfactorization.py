@@ -66,7 +66,7 @@ class LUFactorization:
 
     def __augement_matix(self):
         p = numpy.arange(1, self.__rows + 1).reshape(self.__rows, 1)
-        return numpy.hstack((A, p))
+        return numpy.hstack((self.__A, p))
 
     '''
     exchange two rows of the augemented matrix
@@ -89,16 +89,3 @@ class LUFactorization:
     def __row_induction(self, row1, row2, mul):
         for i in range(row1, self.__cols):
             self.__Ap[row2, i] += self.__Ap[row1, i] * mul
-
-
-if __name__ == '__main__':
-    # A = random((4, 4))
-    A = [[1, 2, -3, 4], [4, 8, 12, -8], [2, 3, 2, 1], [-3, -1, 1, -4]]
-    b = LUFactorization(A)
-    (p, l, u) = b.LU_facctorization_with_P()
-    print("P : ")
-    print(p)
-    print("L : ")
-    print(l)
-    print("U : ")
-    print(u)
