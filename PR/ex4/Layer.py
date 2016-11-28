@@ -4,6 +4,8 @@ import numpy
 '''
 implement the struct for each layer
 '''
+
+
 class Layer:
     def __init__(self, active_func, cell_amount):
         self.active_func = active_func
@@ -22,6 +24,7 @@ class Layer:
     '''
     active all cells of this layer
     '''
+
     def active_cells(self):
         for cell in self.cells:
             cell.active()

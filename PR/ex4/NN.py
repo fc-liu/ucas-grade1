@@ -6,22 +6,28 @@ from matplotlib import pyplot as plt
 '''
 neural network struct
 '''
+
+
 class NN:
     '''
     initial the hidden layer nodes and random the connection weights
     '''
+
     def __init__(self):
         self.input_cells = 3
         self.hidden_cells = 7
         self.output_cells = 3
-        self.w_ih = numpy.random.random(size=(self.hidden_cells, self.input_cells)) * 10
-        self.w_hj = numpy.random.random(size=(self.output_cells, self.hidden_cells)) * 10
+        mul_ih = 6 / math.sqrt(self.input_cells * self.hidden_cells)
+        mul_hj = 6 / math.sqrt(self.output_cells * self.hidden_cells)
+        self.w_ih = numpy.random.random(size=(self.hidden_cells, self.input_cells)) * mul_ih
+        self.w_hj = numpy.random.random(size=(self.output_cells, self.hidden_cells)) * mul_hj
         # self.w_ih = numpy.ones((self.hidden_cells, self.input_cells)) * 5
         # self.w_hj = numpy.ones((self.output_cells, self.hidden_cells)) * 5
 
     '''
     from a sample data build a NN
     '''
+
     def build_NN(self, sample):
         nn_sample = []
         ##initial the three layer network for every sample
@@ -65,41 +71,25 @@ class NN:
     delta W_hj = eta * (1 - y^2) * (W_hj^T * delta_j) * X
     delta W_ih = eta * Z * (1 - Z) * (T - Z) * Y
     '''
+
     def BP_batch_train(self, train_data, eta, theta):
         jw_list = []
         delta_jw = 0
         while True:
-            former_jw = delta_jw    #record the last Jw
+            # former_jw = delta_jw  # record the last Jw
             delta_w_ih = 0
             delta_w_hj = 0
             delta_jw = 0
             for sample in train_data:
-                nn_sample = self.build_NN(sample)   #build a NN from a sample
-                Z = nn_sample[2].get_active_val_as_vec()
-                # net_j = nn_sample[2].get_net_val_as_vec()
-                T = nn_sample[3]
-                Y_T = nn_sample[1].get_active_val_as_vec()
-                Y_T.shape = (Y_T.size, 1)
-                Y = numpy.transpose(Y_T)
-                # net_h = nn_sample[1].get_net_val_as_vec()
-                X_T = nn_sample[0].get_active_val_as_vec()
-                X_T.shape = (X_T.size, 1)
+                (single_jw, single_w_ih, single_w_hj) = self.get_single_update(sample, eta)
+                delta_jw += single_jw
+                delta_w_hj += single_w_hj
+                delta_w_ih += single_w_ih
 
-                sigma_j = Z * (1 - Z) * (T - Z)
-                w_T = numpy.transpose(self.w_hj)
-                dot = numpy.dot(w_T, sigma_j)
-                sigma_h = (1 - Y ** 2) * dot
-                delta_jw += self.loss_func(Z, T)
-                # sigma_j.shape = (sigma_j.size, 1)
-                # sigma_h.shape = (sigma_h.size, 1)
-                sigma_h.shape = (1, sigma_h.size)
-                sigma_j.shape = (1, sigma_j.size)
-                delta_w_hj += numpy.dot(Y_T, sigma_j)
-                delta_w_ih += numpy.dot(X_T, sigma_h)
-
+            delta_jw = delta_jw / len(train_data)
             jw_list.append(delta_jw)
             # round(delta_jw, 5)
-            if numpy.abs(former_jw - delta_jw) < theta:
+            if delta_jw < theta:
                 break
             else:
                 # print("w_hj : ")
@@ -108,8 +98,8 @@ class NN:
                 # print(self.w_ih)
                 print("Jw : ")
                 print(delta_jw)
-                self.w_hj += eta * delta_w_hj.transpose()
-                self.w_ih += eta * delta_w_ih.transpose()
+                self.w_hj += delta_w_hj
+                self.w_ih += delta_w_ih
         self.plot_jw(jw_list)
 
     '''
@@ -117,60 +107,71 @@ class NN:
         delta W_hj = eta * (1 - y^2) * (W_hj^T * delta_j) * X
         delta W_ih = eta * Z * (1 - Z) * (T - Z) * Y
     '''
+
     def BP_single_train(self, train_data, eta, theta):
         jw_list = []
         delta_jw = 0
         while True:
-            former_jw = delta_jw
+            # former_jw = delta_jw
             delta_w_ih = 0
             delta_w_hj = 0
             delta_jw = 0
             for sample in train_data:
-                nn_sample = self.build_NN(sample)
-                Z = nn_sample[2].get_active_val_as_vec()
-                # net_j = nn_sample[2].get_net_val_as_vec()
-                T = nn_sample[3]
-                Y_T = nn_sample[1].get_active_val_as_vec()
-                Y_T.shape = (Y_T.size, 1)
-                Y = numpy.transpose(Y_T)
-                # net_h = nn_sample[1].get_net_val_as_vec()
-                X_T = nn_sample[0].get_active_val_as_vec()
-                X_T.shape = (X_T.size, 1)
+                (single_jw, single_w_ih, single_w_hj) = self.get_single_update(sample, eta)
+                delta_jw += single_jw
+                self.w_ih += single_w_ih
+                self.w_hj += single_w_hj
 
-                sigma_j = Z * (1 - Z) * (T - Z)
-                w_T = numpy.transpose(self.w_hj)
-                dot = numpy.dot(w_T, sigma_j)
-                sigma_h = (1 - Y ** 2) * dot
-                delta_jw += self.loss_func(Z, T)
-                # sigma_j.shape = (sigma_j.size, 1)
-                # sigma_h.shape = (sigma_h.size, 1)
-                sigma_h.shape = (1, sigma_h.size)
-                sigma_j.shape = (1, sigma_j.size)
-                delta_w_hj = numpy.dot(Y_T, sigma_j)
-                delta_w_ih = numpy.dot(X_T, sigma_h)
-                self.w_hj += eta * delta_w_hj.transpose()
-                self.w_ih += eta * 5 * delta_w_ih.transpose()
-
+            delta_jw = delta_jw / len(train_data)
             jw_list.append(delta_jw)
             # round(delta_jw, 5)
-            if numpy.abs(former_jw - delta_jw) < theta:
+            if delta_jw < theta:
                 break
-            else:
-                # print("w_hj : ")
-                # print(self.w_hj)
-                # print("w_ih : ")
-                # print(self.w_ih)
-                print("Jw : ")
-                print(delta_jw)
-                print("former : ")
-                print(former_jw)
-
+            # print("w_hj : ")
+            # print(self.w_hj)
+            # print("w_ih : ")
+            # print(self.w_ih)
+            print("Jw : ")
+            print(delta_jw)
+            print("former : ")
+            # print(former_jw)
         self.plot_jw(jw_list)
-        pass
+
+    '''
+    get update delta for every sample
+    '''
+
+    def get_single_update(self, sample, eta):
+        nn_sample = self.build_NN(sample)
+        Z = nn_sample[2].get_active_val_as_vec()
+        # net_j = nn_sample[2].get_net_val_as_vec()
+        T = nn_sample[3]
+        Y_T = nn_sample[1].get_active_val_as_vec()
+        Y_T.shape = (Y_T.size, 1)
+        Y = numpy.transpose(Y_T)
+        # net_h = nn_sample[1].get_net_val_as_vec()
+        X_T = nn_sample[0].get_active_val_as_vec()
+        X_T.shape = (X_T.size, 1)
+
+        sigma_j = Z * (1 - Z) * (T - Z)
+        w_T = numpy.transpose(self.w_hj)
+        dot = numpy.dot(w_T, sigma_j)
+        sigma_h = (1 - Y ** 2) * dot
+        delta_jw = self.loss_func(Z, T)
+        # sigma_j.shape = (sigma_j.size, 1)
+        # sigma_h.shape = (sigma_h.size, 1)
+        sigma_h.shape = (1, sigma_h.size)
+        sigma_j.shape = (1, sigma_j.size)
+        delta_w_hj = numpy.dot(Y_T, sigma_j)
+        delta_w_ih = numpy.dot(X_T, sigma_h)
+        delta_w_hj = eta * delta_w_hj.transpose()
+        delta_w_ih = eta * delta_w_ih.transpose()
+        return (delta_jw, delta_w_ih, delta_w_hj)
 
     '''
     plot the figure of aim funtion and iteration times
     '''
+
     def plot_jw(self, jw_list):
         plt.figure(figsize=(8, 5), dpi=80)
         # axes = plt.subplot(111)
@@ -183,23 +184,28 @@ class NN:
     '''
     the aim function
     '''
+
     def loss_func(self, base, predict):
         if len(base) != len(predict):
             raise Exception("predict dim error")
         loss_vec = base - predict
         loss = numpy.inner(loss_vec, loss_vec)
-        return loss
+        return loss / 2
 
     '''
     once train the NN finished , we can predict new data
     '''
+
     def predict(self, data_vec):
         nn = self.build_NN(data_vec)
         return nn[2].get_active_val_as_vec()
 
+
 '''
 sigmoid active function
 '''
+
+
 def sigmoid(s):
     # print("-----------------s------------------")
     # print(s)
@@ -209,9 +215,12 @@ def sigmoid(s):
 
     return frac
 
+
 '''
 tanh active function
 '''
+
+
 def tanh(s):
     # print("-----------------s------------------")
     # print(s)
@@ -237,7 +246,8 @@ if __name__ == '__main__':
                   [1.68, 1.79, -0.87, 3], [3.51, -0.22, -1.39, 3], [1.40, -0.44, -0.92, 3], [0.44, 0.83, 1.97, 3],
                   [0.25, 0.68, -0.99, 3], [0.66, -0.45, 0.08, 3]]
     eta = 1
-    theta = 10 ** (-6)
+    theta = 0.12
 
     nn = NN()
     nn.BP_single_train(train_data, eta, theta)
+    # nn.BP_batch_train(train_data, eta, theta)
