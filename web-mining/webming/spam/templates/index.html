@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>垃圾邮件识别系统</title>
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <script src="{% static 'jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+    <!--<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">-->
+    <!--<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>-->
+    <!--<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+
+</head>
+<body>
+
+
+<div class="form-group">
+    <label for="name" style="font-size:20px">请输入邮件内容:</label>
+    <textarea class="form-control" rows="3" id="email"></textarea>
+</div>
+<button class="btn btn-primary" id="sent">
+    提交
+</button>
+<!--data-toggle="modal" data-target="#myModal"-->
+
+<script>
+$(document).ready(function(){
+    $("#sent").click(function(){
+        $.post("/spam/classify/",
+        {
+        data:$("#email").val()
+        }
+        ,function(data,status){
+          //alert("时间：" + data.time+"\n normal : "+data.normal + "\n spam：" + data.spam+"\n email : "+data.data );
+          $("#normal").html(data.normal)
+          $("#spam").html(data.spam)
+          $("#time").html(data.time)
+          $("#myModal").modal('show');
+        });
+        //alert("fdvfds");
+        //alert($("#email").val());
+    });
+});
+
+
+
+
+
+
+
+
+</script>
+
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    识别结果
+                </h4>
+            </div>
+            <div class="modal-body">
+                正常邮件概率 : <span id="normal"></span>% <br>
+                垃圾邮件概率 : <span id="spam"></span>% <br>
+                总用时 : <span id="time"></span> s <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</body>
+</html>
