@@ -4,6 +4,8 @@ import json
 # Create your views here.
 from django.http import HttpResponse
 from django.template import loader
+from .test import test
+from .classifier.text_classifier import nb_classifier
 
 
 def index(request):
@@ -15,9 +17,11 @@ def classify(request):
     start = time.time()
     email = request.POST["data"]
     print(email)
+    a = nb_classifier(email)
+    print(a)
     data = {
-        "normal": 99.1,
-        "spam": 0.9,
+        "normal": round(a, 5) * 100,
+        "spam": round(1 - a, 5) * 100,
         "data": email
     }
     end = time.time()
