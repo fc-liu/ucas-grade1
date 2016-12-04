@@ -1,6 +1,8 @@
 import math
 import numpy
 from IOHelper import get_datalist
+from kmeans import K_Means
+from matplotlib import pyplot as plt
 
 
 def build_sim_mat(data, sigma):
@@ -39,15 +41,68 @@ def build_sys_laplace_mat(W, D):
     D_2 = numpy.zeros((n, n))
     for i in range(n):
         D_2[i, i] = D[i, i] ** (-0.5)
-    print("-------------------")
-    print(D_2)
+    # print("-------------------")
+    # print(D_2)
     L_sys = numpy.dot(numpy.dot(D_2, L), D_2)
     return L_sys
 
     return L
 
 
-def spec_clus_Ng(sim_mat, k):
+def get_K_eigVec_as_mat(mat, k):
+    (a, b) = numpy.linalg.eig(mat)
+    # print("a : ")
+    # print(a)
+    # print("---------------------------------------")
+    return b[:, :k]
+
+
+def norm_row_mat(L):
+    mat = L.copy()
+    n = len(mat)
+    for i in range(n):
+        row = mat[i, :]
+        norm = math.sqrt(numpy.inner(row, row))
+        mat[i, :] = row / norm
+
+    return mat
+
+
+def spec_clus_Ng(data, k, sigma):
+    W = build_sim_mat(data, sigma)
+    # print(W)
+    # print("---------------------------------------")
+    D = build_degree_mat(W)
+    # print(D)
+    # print("---------------------------------------")
+    L = build_sys_laplace_mat(W, D)
+    # print(L)
+    # print("---------------------------------------")
+    U = get_K_eigVec_as_mat(L, k)
+    # print(U)
+    # print("---------------------------------------")
+
+    T = norm_row_mat(U)
+
+    ## plot
+    # plt.figure(figsize=(8, 5), dpi=80)
+    # axes = plt.subplot(111)
+    # type1 = axes.scatter(T[:, 0], T[:, 1], c="red")
+    # plt.show()
+
+    # print(T)
+    # print("---------------------------------------")
+    mu = numpy.random.random((2, k))
+
+    # mu = [[-0.9, 1], [-0.8, -1]]
+
+    print("mu : ")
+    print(mu)
+    print("------------------")
+    kmeans = K_Means()
+    res = kmeans.k_means_train(T, 2, mu)
+    # print(res)
+    print(res)
     pass
 
 
@@ -55,11 +110,5 @@ if __name__ == '__main__':
     file = "data_spec.csv"
     data = get_datalist(file)
     sigma = 1
-    W = build_sim_mat(data, sigma)
-    print(W)
-    print("---------------------------------------")
-    D = build_degree_mat(W)
-    print(D)
-    print("---------------------------------------")
-    L = build_sys_laplace_mat(W, D)
-    print(L)
+    k = 3
+    spec_clus_Ng(data, k, sigma)

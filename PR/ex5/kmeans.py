@@ -54,14 +54,25 @@ class K_Means:
 
             class_data = temp_data
 
-        # plot_point(class_data)
+        plot_point(class_data)
 
         type_list = []
+        k = 0
         for sample in data_set:
+            sample = numpy.asarray(sample)
             for i in range(len(class_data)):
-                if sample in class_data[i]:
+                # print(sample)
+                # print(class_data[i])
+                temp = class_data[i][0]
+                if not (sample - temp).all():
+                    print("---------------------equal------------------")
+
+                # class_data[i]=
+                if not (sample - class_data[i]).all():
+                    k += 1
+                    print("k : " + str(k))
                     type_list.append(i)
-                    break
+                break
 
         for i in range(len(class_data)):
             print("amount of class " + str(i) + " is " + str(len(class_data[i])))
@@ -131,16 +142,55 @@ if __name__ == '__main__':
     c = 5
     dim = len(data[0])
     actual_mu = [[5.5, -4.5], [9, 0], [1, 4], [6.5, 4.5], [1, -1]]
-    mu = [[0, -2], [0, 5], [8, 10], [6, -10], [14, 0]]
+    # mu = [[0, -2], [0, 5], [8, 10], [6, -10], [14, 0]]
     # mu = [[8, 1], [-2, -1], [2, 6], [4, 5], [6, 6]]
+    mu = [[6, 0], [-4, 10], [-4, -8], [5, 1], [12, 0]]
     type = k.k_means_train(data, c, mu)
     print(k.mu_array)
     # print(type)
     # print(len(type))
+
+
+    # mu = [[0, -2], [0, 5], [8, 10], [6, -10], [14, 0]]
+    # class 0 is 192
+    # class 1 is 186
+    # class 2 is 216
+    # class 3 is 204
+    # class 4 is 202
+
 
     # result:
     # [[ 0 -1]
     #  [ 0  4]
     #  [ 5  4]
     #  [ 5 -4]
+    #  [ 8  0]]
+
+
+
+    # mu = [[8, 1], [-2, -1], [2, 6], [4, 5], [6, 6]]
+    # class 0 is 378
+    # class 1 is 195
+    # class 2 is 109
+    # class 3 is 94
+    # class 4 is 224
+    #
+    # [[7 - 2]
+    #  [0 - 1]
+    #  [0  4]
+    # [1
+    # 3]
+    # [6  4]]
+
+
+    # mu=[[6, 0], [-4,10], [-4,-8], [5,1], [12,0]]
+    # amount of class 0 is 204
+    # amount of class 1 is 186
+    # amount of class 2 is 192
+    # amount of class 3 is 216
+    # amount of class 4 is 202
+    # [[ 5 -4]
+    #  [ 0  4]
+    #  [ 0 -1]
+    #  [ 5  4]
     #  [ 8  0]]
