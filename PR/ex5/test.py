@@ -1,3 +1,4 @@
+from sklearn import cluster
 import math
 import numpy
 from IOHelper import get_datalist
@@ -116,9 +117,62 @@ def count_precision(label, pred):
     return max(prec, (1 - prec))
 
 
-if __name__ == '__main__':
+def test_rbf(sigma):
     file = "data_spec.csv"
     data = get_datalist(file)
-    sigma = 1
-    k = 3
-    spec_clus_Ng(data, k, sigma)
+
+    spectral = cluster.SpectralClustering(n_clusters=2, gamma=sigma)
+    spectral.fit(data)
+    label = [1] * 100 + [0] * 100
+    y = spectral.fit_predict(data)
+
+    prec = count_precision(y, label)
+    return prec
+
+
+def test_knn(k):
+    file = "data_spec.csv"
+    data = get_datalist(file)
+
+    spectral = cluster.SpectralClustering(n_clusters=2,
+                                          affinity="nearest_neighbors", n_neighbors=k)
+    spectral.fit(data)
+    label = [1] * 100 + [0] * 100
+    y = spectral.fit_predict(data)
+
+    prec = count_precision(y, label)
+    return prec
+
+
+def test():
+    sigma = numpy.linspace(1, 120, 120)
+    s_p = []
+
+    for i in sigma:
+        s_p.append(test_rbf(i))
+
+    plt.plot(sigma, s_p, "r")
+    plt.xlabel("sigma")
+    plt.ylabel("correctness")
+    plt.show()
+
+    k = numpy.linspace(1, 120, 120)
+    k_p = []
+
+    for i in k:
+        k_p.append(test_knn(i))
+
+    plt.plot(k, k_p, "r")
+    plt.xlabel("k")
+    plt.ylabel("correctness")
+    plt.show()
+
+
+if __name__ == '__main__':
+    test()
+
+    # file = "data_spec.csv"
+    # data = get_datalist(file)
+    # sigma = 1
+    # k = 3
+    # spec_clus_Ng(data, k, sigma)
