@@ -1,8 +1,6 @@
 package ticketingsystem;
 
 
-import java.util.ArrayList;
-
 public class Test extends Thread {
     static int method_call_num = 10000;
 
@@ -36,25 +34,25 @@ public class Test extends Thread {
         int route = 1;
         int rest;
 //        Ticket[] tickets = new Ticket[buy_num];
-        for (int i = 0; i <= buy_num; i++) {
+        for (int i = 0; i <= inq_num; i++) {
             departure = 1;
             arrival = (int) Math.round(Math.random() * (stationnum - 1) + 1);
-//            int rest = tds.inquiry(1, departure, arrival);
+            rest = tds.inquiry(1, departure, arrival);
 //            println("rest : " + rest);
-            Ticket ticket = tds.buyTicket(currentThread().getName(), route, departure, arrival);
 //            tickets[i] = ticket;
 //            println(ticket);
 
-            if (i <= inq_num) {
-                rest = tds.inquiry(route, departure, arrival);
+            if (i <= buy_num) {
+                Ticket ticket = tds.buyTicket(currentThread().getName(), route, departure, arrival);
 //                println(rest);
-            }
 
-            if (i <= refund_num && (null != ticket)) {
-                boolean refres = tds.refundTicket(ticket);
+                if (i <= refund_num && (null != ticket)) {
+                    boolean refres = tds.refundTicket(ticket);
 //                println(refres);
+                }
             }
         }
+
     }
 
     public void test() {
