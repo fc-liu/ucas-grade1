@@ -62,6 +62,9 @@ public class TicketingDS implements TicketingSystem {
     @Override
     public boolean refundTicket(Ticket ticket) {
         //tid invalid
+        if (null == ticket) {
+            return false;
+        }
         int route = ticket.route;
 
         if (route > this.routenum) {
