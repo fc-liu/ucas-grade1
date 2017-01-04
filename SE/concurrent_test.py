@@ -62,13 +62,14 @@ def login():
 
 if __name__ == '__main__':
     threads = []
-    number = 16
+    number = 80
     for i in range(number):
         t = threading.Thread(target=login)
         threads.append(t)
+
+    for t in threads:
         t.start()
 
     for t in threads:
         t.join()
-
     print("all threads finish!!")
