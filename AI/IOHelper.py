@@ -104,18 +104,18 @@ def train(train_file, predic_file, res_file):
         for type_dic in train_data_dic[prov]:
             x_list = list(train_data_dic[prov][type_dic].keys())
             x = []
-            x_plot = []
+            # x_plot = []
             y = []
             threhold = 35
             while x.__len__() == 0:
                 for i in x_list:
                     if i < threhold or i == 0:
                         continue
-                    x_plot.append([i])
+                    # x_plot.append([i])
                     x.append([1 / i, math.cos(i)])
                     y.append(train_data_dic[prov][type_dic][i])
                 threhold -= 5
-            y_full = list(train_data_dic[prov][type_dic].values())
+            # y_full = list(train_data_dic[prov][type_dic].values())
 
             print("x : " + str(x))
             print("y : " + str(y))
